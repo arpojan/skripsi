@@ -29,28 +29,39 @@
         <div class="enclosure-grid">   
             <!-- Tambahkan tag <a> untuk pindah halaman atau biarkan div dengan JS redirect -->
             @foreach ($enclosures as $enclosure)
+                <a href="{{ route('dashboard') }}" class="text-decoration-none">
+                    <div class="enclosure-card glass-card position-relative">
 
-                <div class="enclosure-card glass-card" style="position: relative;">
-                    <form action="{{ route('enclosure.select.post') }}" method="POST" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index: 1; margin: 0;">
-                        @csrf
-                        <input type="hidden" name="enclosure_id" value="1">
-                        <button type="submit" style="width: 100%; height: 100%; background: transparent; border: none; cursor: pointer;"></button>
-                    </form>
-                    <button type="button" class="btn-icon edit-enclosure-btn" data-id="1" data-name="Dart Frog Vivarium A" style="position: absolute; top: 15px; right: 15px; z-index: 10;" title="Pengaturan Kandang">
-                        <i class="ph ph-gear"></i>
-                    </button>
-                    <div class="enclosure-icon" style="position: relative; z-index: 2; pointer-events: none;">
-                        <i class="ph ph-drop text-teal"></i>
-                    </div>
-                    <div class="enclosure-info" style="position: relative; z-index: 2; pointer-events: none;">
-                        <h3>{{ $enclosure->name }}</h3>
-                        <div class="quick-stats" style="display:flex; gap: 1rem; justify-content:center; font-size:0.9rem; color:var(--text-neutral); margin-bottom:0.75rem;">
-                            <span><i class="ph ph-thermometer text-blue"></i> 24.5°C</span>
-                            <span><i class="ph ph-drop text-teal"></i> 85%</span>
+                        <button
+                            type="button"
+                            class="btn-icon edit-enclosure-btn"
+                            data-id="{{ $enclosure->id }}"
+                            data-name="{{ $enclosure->name }}"
+                            style="position: absolute; top: 15px; right: 15px; z-index: 10;"
+                            title="Pengaturan Kandang"
+                        >
+                            <i class="ph ph-gear"></i>
+                        </button>
+
+                        <div class="enclosure-icon">
+                            <i class="ph ph-drop text-teal"></i>
                         </div>
-                        <span class="status-badge stable"><i class="ph ph-check-circle"></i> Stabil</span>
+
+                        <div class="enclosure-info">
+                            <h3>{{ $enclosure->name }}</h3>
+
+                            <div class="quick-stats">
+                                <span><i class="ph ph-thermometer text-blue"></i> 24.5°C</span>
+                                <span><i class="ph ph-drop text-teal"></i> 85%</span>
+                            </div>
+
+                            <span class="status-badge stable">
+                                <i class="ph ph-check-circle"></i> Stabil
+                            </span>
+                        </div>
+
                     </div>
-                </div>
+                </a>
             @endforeach
 
 
