@@ -30,10 +30,10 @@ Route::post('/logout', function () {
 
 // ─── ENCLOSURE ROUTES ─────────────────────────────────────────
 // GET: Tampilkan halaman pilih kandang (data dari DB via Controller)
-Route::get('/select-enclosure/view', [SelectEnclosureController::class, 'index'])->name('enclosure.select');
+Route::get('/select-enclosure', [SelectEnclosureController::class, 'index'])->name('enclosure.select');
 
 // POST: Simpan pilihan kandang aktif ke session → redirect ke dashboard
-Route::post('/select-enclosure', [SelectEnclosureController::class, 'store'])->name('enclosure.select.post');
+Route::post('/select-enclosure/post', [SelectEnclosureController::class, 'store'])->name('enclosure.select.post');
 
 // ─── DASHBOARD ROUTES ─────────────────────────────────────────
 Route::get('/dashboard/{id?}', function ($id = null) {

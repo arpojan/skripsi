@@ -20,20 +20,19 @@ class SelectEnclosureController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'enclosure_id' => 'required|exists:enclosures,id'
+            'enclosure_id' => 'required|exists:enclosures,id',
+            'name' => 'required|string|max:255',
         ]);
 
-        // Save active enclosure to session
-        session(['active_enclosure_id' => $request->enclosure_id]);
+        // Cari enclosure
+        $enclosure = Enclosure::findOrFail($request->enclosure_id);
 
-        if ($request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Active enclosure selected.',
-                'redirect' => route('dashboard', ['id' => $request->enclosure_id])
-            ]);
-        }
+        // Update data
+        $enclosure->name = $request->name;
 
-        return redirect()->route('dashboard', ['id' => $request->enclosure_id]);
+        // Simpan
+        $enclosure->save();
+
+        return redirect()->route('enclosure.select');
     }
 }
