@@ -330,7 +330,3 @@ Dosen Pembimbing: Dr. Suci Br Kembaren, S.Kom., M.M.S.I.
 Proyek ini dikembangkan untuk keperluan akademik. Seluruh hak cipta milik pengembang dan Universitas Gunadarma.
 
 ---
-
-<p align="center">
-  Made with ❤️ for exotic reptile & amphibian keepers
-</p>
