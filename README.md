@@ -170,7 +170,7 @@ php artisan serve
 npm run dev
 ```
 
-The application will be available at: **http://localhost:8000**
+The application will be available at: **https://lightcoral-hedgehog-859644.hostingersite.com**
 
 ---
 
