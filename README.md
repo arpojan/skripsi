@@ -1,300 +1,135 @@
-# RAP Enclosure DSS
+# 🦎 RAP Enclosure DSS
 
-> **Smart Misting Monitoring & AI-Based Decision Support System for Vivarium**
+> **Sistem Informasi Monitoring dan Decision Support System Rule-Based pada Smart Enclosure Hewan Eksotis Menggunakan Internet of Things dan Aplikasi Web**
 
-![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php&logoColor=white)
-![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?logo=laravel&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Platform](https://img.shields.io/badge/IoT-ESP32-blue)
-
----
-
-## About This Project
-
-**RAP Enclosure DSS** is a Laravel-based web dashboard for monitoring and configuring automated misting control in animal enclosures (vivariums). The system is designed for dart frog vivariums and integrates with **ESP32 microcontrollers** as the primary rule-based misting executor.
-
-The web application serves as:
-- **Monitoring Dashboard** — real-time telemetry, humidity & temperature trends
-- **Configuration Panel** — misting threshold & duration parameters
-- **AI-Based DSS** — Decision Support System with actionable recommendations
-
-> **Key Design Principle:** The web/Laravel layer is **not** the misting decision-maker. All ON/OFF misting logic is executed locally by the ESP32. Laravel receives, stores, analyzes, and suggests.
+[![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat&logo=php&logoColor=white)](https://php.net)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white)](https://mysql.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![ESP32](https://img.shields.io/badge/IoT-ESP32-E7352C?style=flat&logo=espressif&logoColor=white)](https://espressif.com)
+[![SUS Score](https://img.shields.io/badge/SUS_Score-83.50%2F100-brightgreen?style=flat)](#pengujian)
 
 ---
 
-## System Architecture
+## 📖 Tentang Proyek
 
-```text
-┌─────────────────────────────────────────────────┐
-│              ESP32 / Hardware Device             │
-│  Reads humidity & temperature sensors            │
-│  ↓                                              │
-│  Fetches control config from Laravel API         │
-│    GET /api/enclosures/{id}/control-config       │
-│  ↓                                              │
-│  Executes rule-based misting logic LOCALLY       │
-│  (misting ON if humidity < bottom_threshold)     │
-│  ↓                                              │
-│  Sends actual telemetry + misting status         │
-│    POST /api/telemetry                           │
-└─────────────────────────────────────────────────┘
-         ↓                        ↑
-┌─────────────────────────────────────────────────┐
-│              Laravel Web Application             │
-│  • Stores sensor logs in MySQL                  │
-│  • Renders real-time monitoring dashboard        │
-│  • Computes stability scores                    │
-│  • Runs AI DSS analysis engine                  │
-│  • Displays AI insights & recommendations       │
-│  ↓                                              │
-│  User reviews recommendation on dashboard        │
-│  → Clicks "Apply" or "Reject"                   │
-│  → If applied: parameters updated               │
-│  → ESP32 fetches new config on next poll        │
-└─────────────────────────────────────────────────┘
-```
+**RAP Enclosure DSS** adalah sistem informasi berbasis web dan IoT untuk monitoring kondisi lingkungan enclosure hewan eksotis (reptil dan amfibi) secara real-time, dilengkapi dengan **Decision Support System (DSS) berbasis aturan (rule-based)** yang membantu pengguna dalam pengambilan keputusan pengaturan parameter misting.
+
+Sistem ini dikembangkan sebagai tugas akhir (skripsi) Program Studi Sistem Informasi, Universitas Gunadarma.
+
+**Cakupan penelitian:**
+- Aplikasi web sebagai platform monitoring, konfigurasi, dan DSS
+- ESP32 berperan sebagai sumber data (sensor) — pengembangan hardware IoT berada di luar cakupan penelitian
 
 ---
 
-## Features
+## ✨ Fitur Utama
 
-| Feature | Description |
+| Fitur | Deskripsi |
 |---|---|
-| **Authentication** | User login, registration, and session-based access |
-| **Enclosure Selection** | Multi-enclosure support; user picks active vivarium on login |
-| **Real-Time Dashboard** | Live temperature, humidity, misting status, and connection state |
-| **Misting Parameters** | Configurable bottom/top humidity threshold and misting duration |
-| **Analytics** | Historical charts, misting cycles, humidity distribution, trend graphs |
-| **Stability Score** | Computed from range compliance, variability, duration, and fluctuation penalty |
-| **AI Insight Engine** | Auto-generated contextual insights based on sensor data patterns |
-| **AI Recommendations (DSS)** | Actionable parameter change suggestions with Human-in-the-Loop approval |
-| **Apply / Reject Workflow** | AI recommendations only take effect after explicit user approval |
-| **Parameter History** | Full audit trail of every manual or AI-driven parameter change |
-| **ESP32 Simulator** | Python script that mimics real ESP32 device for local development |
-| **Device Key Auth** | Optional `X-DEVICE-KEY` header for securing ESP32-to-API communication |
+| 🔐 **Autentikasi** | Login multi-user dengan pemilihan enclosure |
+| 📊 **Dashboard Real-time** | Monitoring suhu, kelembapan, status misting, dan koneksi perangkat |
+| 🧠 **DSS Rule-Based** | Rekomendasi parameter misting berbasis aturan (threshold, stability score) |
+| ✅ **Human-in-the-Loop** | Mekanisme Apply/Reject untuk setiap rekomendasi DSS |
+| 📈 **Analytics** | Grafik historis, distribusi kelembapan, rata-rata RH & suhu, siklus misting |
+| 🏆 **Stability Score** | Skor stabilitas enclosure: RC (40%), VS (30%), SDR (20%), FP (maks 20 poin) |
+| 🐍 **Knowledge Base** | 28 spesies (ular, kadal, gecko, kura-kura darat, katak/kodok) dengan 8 threshold suhu & kelembapan |
+| 📝 **Parameter History** | Riwayat perubahan parameter manual dan dari rekomendasi DSS |
+| 📡 **REST API** | Endpoint untuk telemetry ESP32 dan pengambilan konfigurasi |
 
 ---
 
-## Tech Stack
+## 🏗️ Arsitektur Sistem
 
-| Layer | Technology |
+```
+┌─────────────────────────────────────────────────────┐
+│                    HARDWARE LAYER                   │
+│  DHT22 Sensor → ESP32 → Rule-Based Misting Lokal   │
+│                    ↕ REST API                        │
+├─────────────────────────────────────────────────────┤
+│                   APPLICATION LAYER                 │
+│  Laravel 11 + MySQL + Tailwind CSS (Hostinger)      │
+│                                                     │
+│  ┌─────────┐  ┌───────────┐  ┌──────────────────┐  │
+│  │Dashboard│  │ Analytics │  │  DSS Rule-Based  │  │
+│  │Realtime │  │Historis   │  │ + Apply / Reject │  │
+│  └─────────┘  └───────────┘  └──────────────────┘  │
+└─────────────────────────────────────────────────────┘
+```
+
+**Flow Data:**
+```
+ESP32 baca sensor (DHT22)
+   ↓
+ESP32 ambil konfigurasi terbaru dari web → GET /api/enclosures/{id}/control-config
+   ↓
+ESP32 eksekusi rule-based misting secara lokal
+   ↓
+ESP32 kirim telemetry + status misting aktual → POST /api/telemetry
+   ↓
+Laravel simpan data, hitung Stability Score, jalankan DSS Rule-Based
+   ↓
+Pengguna lihat dashboard → baca rekomendasi DSS → Apply / Reject
+   ↓
+Konfigurasi terbaru siap diambil ESP32 pada siklus berikutnya
+```
+
+> ⚠️ **Catatan:** Laravel/web **bukan** pengambil keputusan ON/OFF misting utama. Eksekusi misting dilakukan sepenuhnya oleh ESP32 berdasarkan threshold yang dikonfigurasi.
+
+---
+
+## 🛠️ Tech Stack
+
+### Web Application
+| Komponen | Teknologi |
 |---|---|
-| **Backend Framework** | Laravel 11 |
-| **Language** | PHP 8.2+ |
-| **Database** | MySQL / MariaDB |
-| **Frontend** | Blade + Vanilla JavaScript |
-| **Charts** | Chart.js |
-| **Build Tool** | Vite |
-| **IoT Device** | ESP32 (or `telemetry_simulator.py` for local testing) |
-| **Simulator Language** | Python 3.x |
+| Backend Framework | Laravel 11 |
+| Bahasa | PHP 8.2+ |
+| Database | MySQL 8.0 |
+| Frontend | Blade + Tailwind CSS |
+| Charting | Chart.js |
+| Deployment | Hostinger (Shared Hosting) |
+
+### IoT Hardware
+| Komponen | Spesifikasi |
+|---|---|
+| Mikrokontroler | ESP32 (CP2102) |
+| Sensor | DHT22 (suhu & kelembapan) |
+| Aktuator | Relay 2-channel |
+| Pompa | Mini submersible water pump DC 5V + misting nozzle |
+| Firmware | Arduino IDE |
+| Library | DHT (Adafruit), ArduinoJson, WiFiManager (tzapu), WiFiClientSecure |
 
 ---
 
-## Prerequisites
+## 📡 API Endpoints
 
-Before you begin, ensure you have the following installed:
+### Telemetry — ESP32 → Server
 
-- **PHP** `>= 8.2` with extensions: `pdo_mysql`, `mbstring`, `openssl`, `bcmath`, `json`
-- **Composer** `>= 2.x`
-- **Node.js** `>= 18.x` and **npm**
-- **MySQL** `>= 8.0` or **MariaDB** `>= 10.6`
-- **Python** `>= 3.8` (only if using the ESP32 simulator)
-- **Git**
-
----
-
-## Quick Start (Local Installation)
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/[YOUR_USERNAME]/rap-enclosure-dss.git
-cd rap-enclosure-dss
+```http
+POST /api/telemetry
+Content-Type: application/json
+X-DEVICE-KEY: {device_key}   (opsional jika device_key enclosure dikosongkan)
 ```
-
-### 2. Install PHP Dependencies
-
-```bash
-composer install
-```
-
-### 3. Install Node.js Dependencies
-
-```bash
-npm install
-```
-
-### 4. Configure Environment
-
-```bash
-cp .env.example .env
-php artisan key:generate
-```
-
-### 5. Set Up Database
-
-Create a MySQL database named `skripsi`, then open `.env` and set:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=skripsi
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-### 6. Run Migrations and Seeders
-
-```bash
-php artisan migrate --seed
-```
-
-This creates all tables and seeds demo data: 1 user account, 2 dart frog vivariums, and 30 days of realistic telemetry data.
-
-### 7. Start the Development Server
-
-Open two terminals and run both simultaneously:
-
-**Terminal 1 — Laravel Backend:**
-
-```bash
-php artisan serve
-```
-
-**Terminal 2 — Vite Asset Builder:**
-
-```bash
-npm run dev
-```
-
-The application will be available at: **https://lightcoral-hedgehog-859644.hostingersite.com**
-
----
-
-## Running the ESP32 Simulator
-
-If you don't have physical ESP32 hardware, use the included Python simulator to generate realistic telemetry:
-
-### Install Python Dependencies
-
-```bash
-pip install requests
-```
-
-### Run Simulator for Enclosure A
-
-```bash
-python telemetry_simulator.py
-```
-
-### Run Simulator for Enclosure B
-
-```bash
-python telemetry_simulator_2.py
-```
-
-The simulator mimics full ESP32 behavior:
-1. Fetches the latest `control-config` from Laravel
-2. Applies rule-based misting logic locally (ON when humidity `< bottom_threshold`)
-3. Sends actual telemetry + misting status to `POST /api/telemetry`
-4. Simulates a 12-hour dry-out period (08:00–20:00) with humidity dropping from ~85% to ~60%
-
----
-
-## Default Credentials
-
-After running `php artisan migrate --seed`, use these credentials to log in:
-
-| Role | Email | Password |
-|---|---|---|
-| Researcher | `researcher@smart-enclosure.test` | `password` |
-
-> You can also register a new account via the `/register` page.
-
-### Demo Enclosures (Seeded)
-
-| Enclosure | Species | Biological Range | Misting Thresholds | Duration |
-|---|---|---|---|---|
-| Dart Frog Vivarium A | *Dendrobates tinctorius* | 80%–95% RH | ON @ 82% / OFF @ 92% | 10 seconds |
-| Dart Frog Vivarium B | *Ranitomeya imitator* | 75%–90% RH | ON @ 78% / OFF @ 88% | 8 seconds |
-
----
-
-## API Endpoints
-
-All API routes are prefixed with `/api`. For local development, no authentication token is required. Device identity is optionally verified via the `X-DEVICE-KEY` header.
-
-### IoT / ESP32 Endpoints
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `POST` | `/api/telemetry` | Receive sensor data from ESP32 | `X-DEVICE-KEY` (optional) |
-| `GET` | `/api/enclosures/{id}/control-config` | ESP32 fetches misting parameters | `X-DEVICE-KEY` (optional) |
-| `POST` | `/api/enclosures/{id}/mist/trigger` | Trigger manual mist from web dashboard | — |
-
-### Dashboard Data Endpoints
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/enclosures/{id}/latest` | Latest telemetry for real-time cards |
-| `GET` | `/api/enclosures/{id}/dashboard` | Combined snapshot: telemetry + stability + AI data |
-| `GET` | `/api/enclosures/{id}/history?period=24h\|7d\|30d\|90d` | Historical sensor logs for charts |
-| `GET` | `/api/enclosures/{id}/analytics?period=24h\|7d\|30d\|90d` | Stats, humidity distribution, misting activity |
-| `GET` | `/api/enclosures/{id}/stability?period=4w\|12w` | Stability score with component breakdown |
-
-### Configuration & DSS Endpoints
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `PUT` | `/api/enclosures/{id}/parameters` | Update misting thresholds and duration |
-| `PUT` | `/api/enclosures/{id}` | Update enclosure identity (name, species, etc.) |
-| `POST` | `/api/enclosures/{id}/analyze` | Trigger AI DSS analysis engine |
-| `POST` | `/api/recommendations/{id}/apply` | Apply AI recommendation → updates ESP32 config |
-| `POST` | `/api/recommendations/{id}/reject` | Reject AI recommendation |
-
-### Payload Examples
-
-**POST `/api/telemetry`** — ESP32 sends a sensor reading:
 
 ```json
 {
   "enclosure_id": 1,
   "temperature": 25.4,
   "humidity": 84.7,
-  "top_humidity": 86.1,
-  "bottom_humidity": 83.5,
   "misting_status": true,
   "misting_duration_executed": 10,
   "device_timestamp": "2026-05-20T15:20:00+07:00"
 }
 ```
 
-Response includes `control_config` for passive parameter sync:
+---
 
-```json
-{
-  "success": true,
-  "message": "Telemetry received.",
-  "data": {
-    "sensor_log_id": 1234,
-    "humidity": 86.1,
-    "temperature": 25.4,
-    "misting_status": true,
-    "control_config": {
-      "enclosure_id": 1,
-      "mode": "auto",
-      "bottom_humidity": 82,
-      "top_humidity": 92,
-      "misting_duration_seconds": 10
-    }
-  }
-}
+### Ambil Konfigurasi — Server → ESP32
+
+```http
+GET /api/enclosures/{id}/control-config
 ```
-
-**GET `/api/enclosures/{id}/control-config`** — ESP32 fetches current config:
 
 ```json
 {
@@ -311,7 +146,13 @@ Response includes `control_config` for passive parameter sync:
 }
 ```
 
-**PUT `/api/enclosures/{id}/parameters`** — Update misting parameters:
+---
+
+### Update Parameter (Manual dari Web)
+
+```http
+PUT /api/enclosures/{id}/parameters
+```
 
 ```json
 {
@@ -322,120 +163,174 @@ Response includes `control_config` for passive parameter sync:
 }
 ```
 
-Valid `source` values: `manual`, `ai_recommendation`, `system_default`
-
 ---
 
-## Security: Device Key Authentication
-
-ESP32 devices can be authenticated using a device key. This is optional for local demo but recommended for production deployments:
+### Apply / Reject Rekomendasi DSS
 
 ```http
-X-DEVICE-KEY: your-secret-device-key
-```
-
-- If `device_key` in the `enclosures` table is **empty** → API accepts all requests (demo mode)
-- If `device_key` is **set** → ESP32 must include the matching header or the request is rejected
-
----
-
-## Project Structure
-
-```text
-rap-enclosure-dss/
-│
-├── app/
-│   ├── Actions/Enclosure/
-│   │   └── UpdateParametersAction.php          # Parameter update + history logging
-│   ├── Http/Controllers/Api/
-│   │   ├── TelemetryController.php             # POST /api/telemetry
-│   │   ├── DashboardController.php             # Dashboard, history, analytics, stability
-│   │   ├── EnclosureController.php             # control-config, update parameters, manual mist
-│   │   ├── RecommendationController.php        # apply / reject AI recommendation
-│   │   └── DssController.php                   # AI DSS trigger endpoint
-│   ├── Models/
-│   │   ├── Enclosure.php                       # + device_key, parameterHistories()
-│   │   ├── EnclosureParameter.php              # + misting_duration_seconds
-│   │   ├── SensorLog.php                       # + misting_duration_executed, device_timestamp
-│   │   └── ParameterHistory.php                # Audit trail for every parameter change
-│   └── Services/
-│       ├── DssService.php                      # AI analysis engine
-│       └── StabilityComputeService.php         # Stability score computation
-│
-├── database/migrations/
-│   ├── 2024_05_15_*                            # Core tables (enclosures, sensor_logs, etc.)
-│   ├── 2026_05_20_000001_add_control_config_columns.php
-│   └── 2026_05_20_000002_create_parameter_histories_table.php
-│
-├── resources/views/dashboard/
-│   └── index.blade.php                         # Main dashboard with misting control form
-│
-├── public/assets/js/
-│   ├── api.js                                  # Frontend API helper functions
-│   └── app.js                                  # Dashboard real-time logic
-│
-├── routes/
-│   ├── api.php                                 # All API routes
-│   └── web.php                                 # Auth, dashboard, enclosure selection
-│
-├── telemetry_simulator.py                      # ESP32 simulator — Enclosure A
-├── telemetry_simulator_2.py                    # ESP32 simulator — Enclosure B
-└── .env.example                                # Environment configuration template
+POST /api/recommendations/{id}/apply
+POST /api/recommendations/{id}/reject
 ```
 
 ---
 
-## AI DSS — How It Works
+## 🚀 Instalasi Lokal
 
-The Decision Support System follows a **Human-in-the-Loop** design, ensuring AI suggestions never auto-apply without user confirmation:
+### Prasyarat
+- PHP 8.2+
+- Composer
+- Node.js & NPM
+- MySQL 8.0
+- Python 3.x (untuk simulator)
 
-```text
-1. Trigger analysis
-   POST /api/enclosures/{id}/analyze?hours=24
+### Langkah Instalasi
 
-2. DssService analyzes sensor data:
-   → Computes StabilityScore (4 weighted components)
-   → Generates Insight  (contextual observation about current state)
-   → Generates Recommendation (suggested parameter adjustment)
+```bash
+# 1. Clone repository
+git clone https://github.com/arpojan/Monitoring-Enclosure.git
+cd Monitoring-Enclosure
 
-3. Recommendation saved with status: "pending"
-   → Does NOT affect ESP32 yet
+# 2. Install dependensi PHP
+composer install
 
-4. User reviews on dashboard:
-   ✅ "Apply"  → POST /api/recommendations/{id}/apply
-               → enclosure_parameters updated
-               → ESP32 fetches new config on next poll
-   ❌ "Reject" → POST /api/recommendations/{id}/reject
-               → Recommendation dismissed, no parameter change
+# 3. Install dependensi JS
+npm install
+
+# 4. Salin konfigurasi environment
+cp .env.example .env
+
+# 5. Generate application key
+php artisan key:generate
+
+# 6. Konfigurasi database di .env
+# (lihat bagian Konfigurasi di bawah)
+
+# 7. Jalankan migrasi dan seeder
+php artisan migrate --seed
+
+# 8. Build assets
+npm run dev
+
+# 9. Jalankan server
+php artisan serve
 ```
 
-### Stability Score Components
+### Konfigurasi `.env`
 
-| Component | Weight | Description |
-|---|---|---|
-| Range Compliance | 40% | Percentage of readings within the biological humidity range |
-| Variability Score | 30% | Standard deviation of humidity readings (lower = better) |
-| Stability Duration | 20% | Longest consecutive period within acceptable range |
-| Fluctuation Penalty | 10% | Deduction for rapid humidity swings |
+```env
+APP_NAME="RAP Enclosure DSS"
+APP_ENV=local
+APP_URL=http://localhost:8000
 
----
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=skripsi
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Contributing
-
-1. Fork this repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m "feat: add your feature description"`
-4. Push to the branch: `git push origin feature/your-feature`
-5. Open a Pull Request
-
-If you modify the database schema, please include the appropriate migration files and update the seeder if needed.
+> ⚠️ **Perhatian untuk Hostinger:** Jangan set variabel environment melalui hPanel jika sudah dikonfigurasi di `.env` — hPanel dapat meng-override nilai `.env`. Gunakan `SetEnv` di `.htaccess` jika diperlukan.
 
 ---
 
-## License
+## 🐍 Simulator ESP32
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Untuk pengujian tanpa hardware fisik, gunakan simulator telemetry:
+
+```bash
+python telemetry_simulator.py
+```
+
+Simulator mengikuti flow lengkap: mengambil konfigurasi dari web, menjalankan rule-based misting secara lokal, lalu mengirim data telemetry dan status misting aktual ke backend.
 
 ---
 
-</div>
+## 📂 Struktur File Penting
+
+```
+app/
+├── Http/Controllers/
+│   ├── Api/
+│   │   ├── TelemetryController.php      # Endpoint telemetry ESP32
+│   │   ├── EnclosureController.php      # Manajemen enclosure & konfigurasi
+│   │   └── RecommendationController.php # Apply/reject DSS recommendation
+│   └── DashboardController.php
+├── Models/
+│   ├── AnimalKnowledgeBase.php          # 28 spesies + threshold
+│   ├── EnclosureParameter.php           # Parameter misting aktif
+│   └── ParameterHistory.php             # Riwayat perubahan parameter
+├── Services/
+│   └── DssService.php                   # Engine DSS Rule-Based + Stability Score
+resources/
+└── views/
+    └── dashboard/
+        └── index.blade.php              # Dashboard utama
+public/assets/js/
+├── api.js                               # Client-side API calls
+└── app.js                               # Dashboard logic (polling real-time)
+database/
+├── migrations/
+└── seeders/
+telemetry_simulator.py                   # Simulator sensor ESP32
+telemetry_simulator_2.py                 # Simulator alternatif
+```
+
+---
+
+## 🧪 Pengujian
+
+| Metode Pengujian | Hasil |
+|---|---|
+| **Black-Box Testing** (Equivalence Partitioning) | ✅ 100% Pass — 11 test case |
+| **System Usability Scale (SUS)** | 83.50 / 100 — **Excellent (Grade A)** |
+| Jumlah Responden | 15 responden |
+
+---
+
+## 📋 SDLC
+
+Proyek dikembangkan menggunakan metode **Waterfall** dengan 5 fase:
+
+```
+1. Requirement   →   2. Design   →   3. Implementation
+                                            ↓
+                      5. Maintenance ← 4. Verification
+```
+
+Deployment ke Hostinger merupakan bagian dari fase **Maintenance**.
+
+---
+
+## 🔒 Keamanan API
+
+Endpoint ESP32 mendukung header opsional untuk autentikasi perangkat:
+
+```
+X-DEVICE-KEY: your-device-key
+```
+
+- Jika `device_key` pada tabel `enclosures` **kosong** → API menerima request tanpa header (mode demo/lokal)
+- Jika `device_key` **diisi** → ESP32 wajib menyertakan header tersebut
+
+---
+
+## 👨‍💻 Pengembang
+
+**Arvauzan Putra Kurniawan**
+NPM: 10122227
+Program Studi Sistem Informasi — Universitas Gunadarma
+
+Dosen Pembimbing: Dr. Suci Br Kembaren, S.Kom., M.M.S.I.
+
+---
+
+## 📄 Lisensi
+
+Proyek ini dikembangkan untuk keperluan akademik. Seluruh hak cipta milik pengembang dan Universitas Gunadarma.
+
+---
+
+<p align="center">
+  Made with ❤️ for exotic reptile & amphibian keepers
+</p>
